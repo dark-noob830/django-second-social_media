@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+index page
+{% for post in posts %}
+<div class="card">
+
+    <a href="{{post.get_absolute_url}}" class="card-body">{{post.body|truncatewords:8}}</a>
+</div>
+{% endfor %}
+{% endblock %}
