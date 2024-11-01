@@ -2,11 +2,47 @@
 
 {% block content %}
 
-<p><a href="{% url 'account:user_profile' post.user.id %}">{{post.user.username}} </a> - {{post.updated|date:"Y M"}}</p>
+<p>
+    <a href="{% url 'account:user_profile' post.user.id %}">{{post.user.username}} </a> - {{post.updated|date:"Y M"}}
+</p>
 <div class="card">
     <p class="card-body">{{post.body}}</p>
 </div>
 {% if request.user.id == post.user.id %}
 <a href="{% url 'home:post_delete' post.id %}" class="btn btn-danger m-2">Delete</a>
+<a href="{% url 'home:post_update' post.id %}" class="btn btn-info m-2">Update</a>
 {% endif %}
+{% if request.user.is_authenticated %}
+<a href="{% url 'home:post_like' post.id %}" class="{% if can_like %} disabled {% endif %} btn btn-primary"> like
+    {{post.likes_count}} </a>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <input type="submit" value="send">
+</form>
+{% else %}
+<p class="alert alert-danger">comment is only fo logged in people.</p>
+{% endif %}
+<hr/>
+{% for comment in comments %}
+<div class="card bg-dark text-white">
+    <p class="card-header">{{comment.user}} - {{comment.created|timesince}}</p>
+    <p class="card-body">{{comment.body}}</p>
+    {% if request.user.is_authenticated %}
+    <form action="{% url 'home:add_reply' post.id comment.id %}" method="post">
+        {% csrf_token %}
+        {{reply_form.as_p}}
+        <button type="submit">send</button>
+    </form>
+    {% endif %}
+    {% with replies=comment.rcomment.all %}
+    {% for reply in replies %}
+    <p class="bg-primary p-3 m-2">{{reply.user}} - {{reply.body}}</p>
+    {% endfor %}
+    {% endwith %}
+</div>
+<br/>
+{% empty %}
+<p>no comment</p>
+{% endfor %}
 {% endblock %}

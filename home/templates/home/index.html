@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-index page
+<form action="" method="get">
+    {{search.as_p}}
+    <button type="submit">search</button>
+</form>
 {% for post in posts %}
 <div class="card">
 
